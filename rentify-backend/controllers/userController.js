@@ -3,12 +3,19 @@ const User = require("../models/User");
 
 exports.registerUser = async (req, res) => {
   try {
+    console.log("Received payload:", req.body); // Log the received payload
+
     const user = new User(req.body);
     await user.save();
     const token = await user.generateAuthToken();
     res.status(201).send({ user, token });
   } catch (err) {
-    res.status(400).send(err);
+    if (err.code === 11000) {
+      // Duplicate key error (e.g., email already in use)
+      return res.status(400).send({ message: "Email already in use" });
+    }
+    console.error("Error during user registration:", err); // Log the error
+    res.status(400).send({ message: err.message });
   }
 };
 
@@ -25,8 +32,10 @@ exports.loginUser = async (req, res) => {
 
 exports.getUserRole = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(400).send({ message: "User not authenticated" });
+    }
     const userRole = req.user.isSeller ? "Seller" : "Buyer";
-    console.log("Logged-in user information:", req.user); // Log user information to the console
     res.json({ role: userRole });
   } catch (error) {
     console.error("Error fetching user role:", error);

@@ -1,4 +1,3 @@
-// routes/userRoutes.js
 const express = require("express");
 const {
   registerUser,
@@ -11,7 +10,7 @@ const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-router.get("/isSeller", getUserRole);
-router.get("/me", getMe);
+router.get("/isSeller", auth, getUserRole); // Ensure auth middleware is applied
+router.get("/me", auth, getMe);
 
 module.exports = router;
