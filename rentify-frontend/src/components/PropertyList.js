@@ -6,12 +6,13 @@ import {
 } from "../services/api";
 import PropertyCard from "./PropertyCard";
 import PropertyForm from "./PropertyForm";
-import { Row, Col, Button } from "react-bootstrap";
+import { Row, Col, Button, Alert } from "react-bootstrap";
 
 const PropertyList = ({ isSeller }) => {
   const [properties, setProperties] = useState([]);
   const [buyerEmail, setBuyerEmail] = useState("");
   const [editingProperty, setEditingProperty] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const getProperties = async () => {
@@ -20,21 +21,25 @@ const PropertyList = ({ isSeller }) => {
           ? await fetchSellerProperties()
           : await fetchProperties();
         if (response && response.properties) {
-          setProperties(response.properties); // Adjust according to your API response structure if necessary
+          console.log("API Response:", response); // Log the entire response
+          setProperties(Array.from(response.properties)); // Adjust according to your API response structure if necessary
         } else {
           console.error("Unexpected response format:", response);
+          setError("Unexpected response format");
         }
       } catch (error) {
         console.error("Failed to fetch properties:", error);
+        setError("Failed to fetch properties");
       }
     };
 
     // Set buyer email based on logged-in user
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const userInfo = JSON.parse(localStorage.getItem("user"));
     if (userInfo && userInfo.email) {
       setBuyerEmail(userInfo.email);
     } else {
       console.warn("No user info found in local storage or email is missing");
+      setError("No user info found in local storage or email is missing");
     }
 
     getProperties();
@@ -48,6 +53,7 @@ const PropertyList = ({ isSeller }) => {
       );
     } catch (error) {
       console.error("Failed to delete property:", error);
+      setError("Failed to delete property");
     }
   };
 
@@ -66,6 +72,7 @@ const PropertyList = ({ isSeller }) => {
 
   return (
     <div>
+      {error && <Alert variant="danger">{error}</Alert>}
       {isSeller && (
         <Button onClick={() => setEditingProperty({})} className="mb-3">
           Add Property
@@ -75,17 +82,23 @@ const PropertyList = ({ isSeller }) => {
         <PropertyForm property={editingProperty} onSave={handleSave} />
       )}
       <Row>
-        {properties.map((property) => (
-          <Col key={property._id} sm={12} md={6} lg={4} xl={3}>
-            <PropertyCard
-              property={property}
-              buyerEmail={buyerEmail}
-              isSeller={isSeller}
-              onEdit={() => setEditingProperty(property)}
-              onDelete={() => handleDelete(property._id)}
-            />
+        {properties && properties.length > 0 ? (
+          properties.map((property) => (
+            <Col key={property._id} sm={12} md={6} lg={4} xl={3}>
+              <PropertyCard
+                property={property}
+                buyerEmail={buyerEmail}
+                isSeller={isSeller}
+                onEdit={() => setEditingProperty(property)}
+                onDelete={() => handleDelete(property._id)}
+              />
+            </Col>
+          ))
+        ) : (
+          <Col>
+            <Alert variant="info">No properties found.</Alert>
           </Col>
-        ))}
+        )}
       </Row>
     </div>
   );

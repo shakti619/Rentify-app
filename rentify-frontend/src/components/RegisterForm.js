@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { registerUser } from "../services/api";
-import { BsFillPersonFill, BsEnvelope, BsPhone, BsLock } from "react-icons/bs"; // Importing icons from React Icons
-import { Form, Button } from "react-bootstrap"; // Importing Form and Button components from react-bootstrap
-import "./styles.css"; // Importing custom CSS for RegisterForm
+import { BsFillPersonFill, BsEnvelope, BsPhone, BsLock } from "react-icons/bs";
+import { Form, Button } from "react-bootstrap";
+import "./styles.css";
 
 function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -11,7 +11,7 @@ function RegisterForm() {
     email: "",
     phoneNumber: "",
     password: "",
-    role: "buyer", // Default role is buyer
+    isSeller: false, // Default role is buyer
   });
 
   const [error, setError] = useState("");
@@ -107,18 +107,14 @@ function RegisterForm() {
         />
       </Form.Group>
 
-      <Form.Group controlId="formBasicRole">
-        <Form.Label>Select Role</Form.Label>
-        <Form.Control
-          as="select"
-          name="role"
-          value={formData.role}
+      <Form.Group controlId="formBasicIsSeller">
+        <Form.Check
+          type="checkbox"
+          name="isSeller"
+          label="Are you a seller?"
+          checked={formData.isSeller}
           onChange={handleChange}
-          required
-        >
-          <option value="buyer">Buyer</option>
-          <option value="seller">Seller</option>
-        </Form.Control>
+        />
       </Form.Group>
 
       {error && <p className="error-message">{error}</p>}

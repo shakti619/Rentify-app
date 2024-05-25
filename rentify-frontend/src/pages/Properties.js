@@ -1,25 +1,22 @@
+// Properties.js
 import React, { useEffect, useState } from "react";
 import PropertyList from "../components/PropertyList";
-import axios from "axios";
+import { fetchUserRole } from "../services/api"; // Import the function from your api.js file
 
 const Properties = () => {
   const [isSeller, setIsSeller] = useState(false);
 
   useEffect(() => {
-    const fetchUserRole = async () => {
+    const getUserRole = async () => {
       try {
-        const res = await axios.get("/api/users/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setIsSeller(res.data.role === "seller");
+        const data = await fetchUserRole();
+        setIsSeller(data.role === "Seller");
       } catch (err) {
         console.error("Failed to fetch user role:", err);
       }
     };
 
-    fetchUserRole();
+    getUserRole();
   }, []);
 
   return (

@@ -1,3 +1,4 @@
+// api.js
 import axios from "axios";
 
 const API_URL = "http://localhost:5000/api"; // Ensure this URL is correct for your backend
@@ -96,6 +97,9 @@ export const deleteProperty = async (id) => {
 export const registerUser = async (userData) => {
   try {
     const response = await api.post("/users/register", userData);
+    const { user, token } = response.data;
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
     return response.data;
   } catch (error) {
     console.error("Failed to register user", error);
@@ -106,6 +110,9 @@ export const registerUser = async (userData) => {
 export const loginUser = async (credentials) => {
   try {
     const response = await api.post("/users/login", credentials);
+    const { user, token } = response.data;
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
     return response.data;
   } catch (error) {
     console.error("Failed to login", error);
@@ -136,7 +143,7 @@ export const expressInterest = async (id, email) => {
 // Fetch user role and log user information
 export const fetchUserRole = async () => {
   try {
-    const response = await api.get("/users/role");
+    const response = await api.get("/users/isSeller");
     console.log("User information:", response.data);
     return response.data;
   } catch (error) {
@@ -147,7 +154,7 @@ export const fetchUserRole = async () => {
 
 export const fetchUserInfo = async () => {
   try {
-    const response = await api.get("/users/me");
+    const response = await api.get("/users/isSeller");
     console.log("Authenticated user information:", response.data);
     return response.data;
   } catch (error) {
