@@ -28,6 +28,7 @@ function RegisterForm() {
     e.preventDefault();
     try {
       await registerUser(formData);
+      console.log(formData);
       window.location.href = "/login";
     } catch (err) {
       setError(err.response?.data?.message || "Failed to register");

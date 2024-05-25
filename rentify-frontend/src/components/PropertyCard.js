@@ -17,7 +17,7 @@ const PropertyCard = ({ property, buyerEmail, isSeller, onEdit, onDelete }) => {
 
   const handleInterest = async () => {
     try {
-      await expressInterest(property._id, { email: buyerEmail }); // Pass the actual buyer email
+      await expressInterest(property._id, buyerEmail);
       alert("Interest expressed and email sent");
     } catch (error) {
       console.error("Error expressing interest:", error);

@@ -133,4 +133,27 @@ export const expressInterest = async (id, email) => {
   }
 };
 
+// Fetch user role and log user information
+export const fetchUserRole = async () => {
+  try {
+    const response = await api.get("/users/role");
+    console.log("User information:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user role", error);
+    throw error;
+  }
+};
+
+export const fetchUserInfo = async () => {
+  try {
+    const response = await api.get("/users/me");
+    console.log("Authenticated user information:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch user information", error);
+    throw error;
+  }
+};
+
 export default api;
