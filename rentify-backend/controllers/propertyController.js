@@ -23,14 +23,21 @@ exports.getProperties = async (req, res) => {
 
 exports.getPropertyById = async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id);
+    const property = await Property.findById(req.params.id).populate(
+      "owner",
+      "firstName lastName email"
+    );
     if (!property) {
       return res.status(404).send({ error: "Property not found" });
     }
+
+    if (!req.user) {
+      return res.status(401).send({ error: "Unauthorized access" });
+    }
+
     res.send(property);
   } catch (err) {
-    console.error(err);
-    res.status(500).send({ error: "Server Error" });
+    res.status(500).send(err);
   }
 };
 
@@ -90,12 +97,13 @@ exports.likeProperty = async (req, res) => {
     if (!property) {
       return res.status(404).send({ error: "Property not found" });
     }
-    property.likes += 1;
+
+    property.likes = (property.likes || 0) + 1;
     await property.save();
-    res.send(property);
+
+    res.send({ likes: property.likes });
   } catch (err) {
-    console.error(err);
-    res.status(500).send({ error: "Server Error" });
+    res.status(500).send(err);
   }
 };
 
@@ -106,12 +114,12 @@ exports.expressInterest = async (req, res) => {
       return res.status(404).send({ error: "Property not found" });
     }
 
-    const { email } = req.body;
-    const sellerEmail = property.owner.email;
-
-    if (!email) {
-      return res.status(400).send({ error: "Buyer email is required" });
+    if (!req.user) {
+      return res.status(401).send({ error: "Unauthorized access" });
     }
+
+    const buyerEmail = req.user.email;
+    const sellerEmail = property.owner.email;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -123,7 +131,7 @@ exports.expressInterest = async (req, res) => {
 
     const mailOptionsBuyer = {
       from: process.env.EMAIL_USER,
-      to: email,
+      to: buyerEmail,
       subject: "Property Interest Confirmation",
       text: `You have expressed interest in the property "${property.title}". Contact details of the seller: ${sellerEmail}`,
     };
@@ -132,7 +140,7 @@ exports.expressInterest = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: sellerEmail,
       subject: "New Interest in Your Property",
-      text: `A buyer has expressed interest in your property "${property.title}". Contact details of the buyer: ${email}`,
+      text: `A buyer has expressed interest in your property "${property.title}". Contact details of the buyer: ${buyerEmail}`,
     };
 
     await transporter.sendMail(mailOptionsBuyer);
