@@ -1,73 +1,96 @@
-const API_URL = "http://localhost:5000/api"; // Ensure the correct backend URL
+import axios from "axios";
+
+const API_URL = "http://localhost:5000/api";
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      // Handle unauthorized errors
+      console.error("Unauthorized access - possibly invalid token");
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const fetchProperties = async () => {
-  const response = await fetch(`${API_URL}/properties`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch properties");
+  try {
+    const response = await api.get("/properties");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch properties", error);
+    throw error;
   }
-  return await response.json();
 };
 
 export const fetchPropertyById = async (id) => {
-  const response = await fetch(`${API_URL}/properties/${id}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch property");
+  try {
+    const response = await api.get(`/properties/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch property", error);
+    throw error;
   }
-  return await response.json();
 };
 
 export const registerUser = async (userData) => {
-  const response = await fetch(`${API_URL}/users/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  });
-  if (!response.ok) {
-    throw new Error("Failed to register user");
+  try {
+    const response = await api.post("/users/register", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to register user", error);
+    throw error;
   }
-  return await response.json();
 };
 
 export const loginUser = async (credentials) => {
-  const response = await fetch(`${API_URL}/users/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
-  });
-  if (!response.ok) {
-    throw new Error("Failed to login");
+  try {
+    const response = await api.post("/users/login", credentials);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to login", error);
+    throw error;
   }
-  return await response.json();
 };
 
 export const likeProperty = async (id) => {
-  const response = await fetch(`${API_URL}/properties/${id}/like`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to like property");
+  try {
+    const response = await api.post(`/properties/${id}/like`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to like property", error);
+    throw error;
   }
-  return await response.json();
 };
 
 export const expressInterest = async (id, email) => {
-  const response = await fetch(`${API_URL}/properties/${id}/interest`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(email),
-  });
-  if (!response.ok) {
-    throw new Error("Failed to express interest");
+  try {
+    const response = await api.post(`/properties/${id}/interest`, email);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to express interest", error);
+    throw error;
   }
-  return await response.json();
 };
+
+export default api;
