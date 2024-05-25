@@ -25,6 +25,32 @@ const propertySchema = new mongoose.Schema(
       trim: true,
       maxlength: [100, "Location cannot be more than 100 characters"],
     },
+    area: {
+      type: String,
+      required: [true, "Area is required"],
+      trim: true,
+      maxlength: [100, "Area cannot be more than 100 characters"],
+    },
+    bedrooms: {
+      type: Number,
+      required: [true, "Number of bedrooms is required"],
+      min: [1, "There must be at least one bedroom"],
+    },
+    bathrooms: {
+      type: Number,
+      required: [true, "Number of bathrooms is required"],
+      min: [1, "There must be at least one bathroom"],
+    },
+    hospitalsNearby: {
+      type: String,
+      trim: true,
+      maxlength: [200, "Hospitals nearby cannot be more than 200 characters"],
+    },
+    collegesNearby: {
+      type: String,
+      trim: true,
+      maxlength: [200, "Colleges nearby cannot be more than 200 characters"],
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, "Owner is required"],

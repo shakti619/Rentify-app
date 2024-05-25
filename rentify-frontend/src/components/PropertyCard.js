@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { likeProperty, expressInterest } from "../services/api";
 import { Card, Button, Row, Col } from "react-bootstrap";
-import { FaThumbsUp, FaHandshake } from "react-icons/fa";
+import { FaThumbsUp, FaHandshake, FaEdit, FaTrash } from "react-icons/fa";
 
-const PropertyCard = ({ property, buyerEmail }) => {
+const PropertyCard = ({ property, buyerEmail, isSeller, onEdit, onDelete }) => {
   const [likes, setLikes] = useState(property.likes);
 
   const handleLike = async () => {
@@ -36,16 +36,33 @@ const PropertyCard = ({ property, buyerEmail }) => {
         <Card.Text>Rent: ${property.rent}</Card.Text>
         <Card.Text>Likes: {likes}</Card.Text>
         <Row>
-          <Col md={6} className="text-left">
-            <Button variant="success" onClick={handleInterest}>
-              <FaHandshake /> I am Interested
-            </Button>
-          </Col>
-          <Col md={6} className="text-right">
-            <Button variant="primary" onClick={handleLike}>
-              <FaThumbsUp /> Like
-            </Button>
-          </Col>
+          {isSeller ? (
+            <>
+              <Col md={6} className="text-left">
+                <Button variant="warning" onClick={onEdit}>
+                  <FaEdit /> Edit
+                </Button>
+              </Col>
+              <Col md={6} className="text-right">
+                <Button variant="danger" onClick={onDelete}>
+                  <FaTrash /> Delete
+                </Button>
+              </Col>
+            </>
+          ) : (
+            <>
+              <Col md={6} className="text-left">
+                <Button variant="success" onClick={handleInterest}>
+                  <FaHandshake /> I am Interested
+                </Button>
+              </Col>
+              <Col md={6} className="text-right">
+                <Button variant="primary" onClick={handleLike}>
+                  <FaThumbsUp /> Like
+                </Button>
+              </Col>
+            </>
+          )}
         </Row>
       </Card.Body>
     </Card>

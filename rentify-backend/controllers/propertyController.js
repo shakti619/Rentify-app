@@ -1,6 +1,6 @@
 const Property = require("../models/Property");
 const nodemailer = require("nodemailer");
-const { check, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 
 exports.getProperties = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -8,7 +8,10 @@ exports.getProperties = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    const properties = await Property.find({}).skip(skip).limit(limit);
+    const properties = await Property.find({})
+      .skip(skip)
+      .limit(limit)
+      .populate("owner", "firstName lastName email");
     const count = await Property.countDocuments({});
     res.send({
       properties,
@@ -48,7 +51,10 @@ exports.createProperty = async (req, res) => {
   }
 
   try {
-    const property = new Property(req.body);
+    const property = new Property({
+      ...req.body,
+      owner: req.user._id,
+    });
     await property.save();
     res.status(201).send(property);
   } catch (err) {
@@ -64,12 +70,15 @@ exports.updateProperty = async (req, res) => {
   }
 
   try {
-    const property = await Property.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const property = await Property.findOneAndUpdate(
+      { _id: req.params.id, owner: req.user._id },
+      req.body,
+      { new: true, runValidators: true }
+    );
     if (!property) {
-      return res.status(404).send({ error: "Property not found" });
+      return res
+        .status(404)
+        .send({ error: "Property not found or unauthorized" });
     }
     res.send(property);
   } catch (err) {
@@ -80,9 +89,14 @@ exports.updateProperty = async (req, res) => {
 
 exports.deleteProperty = async (req, res) => {
   try {
-    const property = await Property.findByIdAndDelete(req.params.id);
+    const property = await Property.findOneAndDelete({
+      _id: req.params.id,
+      owner: req.user._id,
+    });
     if (!property) {
-      return res.status(404).send({ error: "Property not found" });
+      return res
+        .status(404)
+        .send({ error: "Property not found or unauthorized" });
     }
     res.send({ message: "Property deleted" });
   } catch (err) {
@@ -147,6 +161,17 @@ exports.expressInterest = async (req, res) => {
     await transporter.sendMail(mailOptionsSeller);
 
     res.send({ message: "Interest expressed and emails sent" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: "Server Error" });
+  }
+};
+
+// Get properties for the seller
+exports.getSellerProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({ owner: req.user._id });
+    res.send(properties);
   } catch (err) {
     console.error(err);
     res.status(500).send({ error: "Server Error" });

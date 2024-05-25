@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "http://localhost:5000/api"; // Ensure this URL is correct for your backend
 
 const api = axios.create({
   baseURL: API_URL,
@@ -26,8 +26,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Handle unauthorized errors
       console.error("Unauthorized access - possibly invalid token");
+      // Optional: Handle token expiration, redirect to login, etc.
     }
     return Promise.reject(error);
   }
@@ -43,12 +43,52 @@ export const fetchProperties = async () => {
   }
 };
 
+export const fetchSellerProperties = async () => {
+  try {
+    const response = await api.get("/properties/seller/properties");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch seller properties", error);
+    throw error;
+  }
+};
+
 export const fetchPropertyById = async (id) => {
   try {
     const response = await api.get(`/properties/${id}`);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch property", error);
+    throw error;
+  }
+};
+
+export const createProperty = async (propertyData) => {
+  try {
+    const response = await api.post("/properties", propertyData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create property", error);
+    throw error;
+  }
+};
+
+export const updateProperty = async (id, propertyData) => {
+  try {
+    const response = await api.patch(`/properties/${id}`, propertyData);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update property", error);
+    throw error;
+  }
+};
+
+export const deleteProperty = async (id) => {
+  try {
+    const response = await api.delete(`/properties/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to delete property", error);
     throw error;
   }
 };
