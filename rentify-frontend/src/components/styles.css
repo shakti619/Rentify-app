@@ -1,0 +1,61 @@
+.nav-item {
+  margin-left: 10px; /* Adjust this value for desired spacing */
+  margin-right: 10px; /* Adjust this value for desired spacing */
+}
+/* LoginForm.css */
+.login-form {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* RegisterForm.css */
+.register-form {
+  background-color: #f9f9f9;
+  padding: 30px; /* Increased padding for larger form */
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 20px; /* Added upper margin to the submit button */
+}
+
+/* Home.css */
+/* Home.css */
+.home-bg {
+  background-image: url("../../public/bg.webp"); /* Path to the image in the public folder */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: flex-start; /* Align content to the left */
+  align-items: flex-start; /* Align content to the top */
+  margin: 0; /* Remove any default margin */
+  padding: 0; /* Remove any default padding */
+  color: black; /* Set text color to black */
+}
+
+.home-content {
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  max-width: 600px; /* Limit the width of the content */
+  padding: 20px; /* Add padding to the content */
+}
+
+.welcome-text h1 {
+  font-size: 60px; /* Increase font size */
+}
+
+.welcome-text p {
+  font-size: 20px;
+}
+
+.welcome-text {
+  color: #333333; /* Set text color to black */
+}
+
+.marketing-line p {
+  font-size: 40px;
+}
