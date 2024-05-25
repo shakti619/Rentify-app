@@ -1,33 +1,36 @@
-// RegisterForm.js
 import React, { useState } from "react";
-import { register } from "../services/api";
+import { registerUser } from "../services/api";
 import { BsFillPersonFill, BsEnvelope, BsPhone, BsLock } from "react-icons/bs"; // Importing icons from React Icons
 import { Form, Button } from "react-bootstrap"; // Importing Form and Button components from react-bootstrap
 import "./styles.css"; // Importing custom CSS for RegisterForm
 
-const RegisterForm = () => {
+function RegisterForm() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
     password: "",
-    role: "buyer", // or 'seller'
+    role: "buyer", // Default role is buyer
   });
 
+  const [error, setError] = useState("");
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await register(formData);
-      console.log(response.data);
-      // Handle registration success
-    } catch (error) {
-      console.error(error);
-      // Handle registration error
+      await registerUser(formData);
+      window.location.href = "/login";
+    } catch (err) {
+      setError("Failed to register");
     }
   };
 
@@ -117,11 +120,12 @@ const RegisterForm = () => {
         </Form.Control>
       </Form.Group>
 
+      {error && <p className="error-message">{error}</p>}
       <Button variant="primary" type="submit" className="submit-button">
         Register
       </Button>
     </Form>
   );
-};
+}
 
 export default RegisterForm;

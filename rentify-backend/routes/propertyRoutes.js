@@ -1,17 +1,22 @@
-// routes/propertyRoutes.js
 const express = require("express");
 const {
-  createProperty,
   getProperties,
+  getPropertyById,
+  createProperty,
+  updateProperty,
+  deleteProperty,
   likeProperty,
-  showInterest,
+  expressInterest,
 } = require("../controllers/propertyController");
 const auth = require("../middleware/auth");
 const router = express.Router();
 
-router.post("/", auth, createProperty);
 router.get("/", getProperties);
+router.get("/:id", getPropertyById);
+router.post("/", auth, createProperty);
+router.patch("/:id", auth, updateProperty);
+router.delete("/:id", auth, deleteProperty);
 router.post("/:id/like", auth, likeProperty);
-router.post("/interest", auth, showInterest);
+router.post("/:id/interest", auth, expressInterest);
 
 module.exports = router;

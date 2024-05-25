@@ -1,63 +1,124 @@
-// controllers/propertyController.js
 const Property = require("../models/Property");
-const User = require("../models/User");
-const { sendInterestEmail } = require("./userController");
+const nodemailer = require("nodemailer");
 
-exports.createProperty = async (req, res) => {
-  const { title, description, location, bedrooms, bathrooms, rent, seller } =
-    req.body;
+exports.getProperties = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
   try {
-    const property = new Property({
-      title,
-      description,
-      location,
-      bedrooms,
-      bathrooms,
-      rent,
-      seller,
+    const properties = await Property.find({}).skip(skip).limit(limit);
+    const count = await Property.countDocuments({});
+    res.send({
+      properties,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
     });
-    await property.save();
-    res.status(201).json(property);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+  } catch (err) {
+    res.status(500).send(err);
   }
 };
 
-exports.getProperties = async (req, res) => {
+exports.getPropertyById = async (req, res) => {
   try {
-    const properties = await Property.find().populate("seller");
-    res.status(200).json(properties);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const property = await Property.findById(req.params.id);
+    if (!property) {
+      return res.status(404).send({ error: "Property not found" });
+    }
+    res.send(property);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+exports.createProperty = async (req, res) => {
+  try {
+    const property = new Property(req.body);
+    await property.save();
+    res.status(201).send(property);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
+
+exports.updateProperty = async (req, res) => {
+  try {
+    const property = await Property.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!property) {
+      return res.status(404).send({ error: "Property not found" });
+    }
+    res.send(property);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+};
+
+exports.deleteProperty = async (req, res) => {
+  try {
+    const property = await Property.findByIdAndDelete(req.params.id);
+    if (!property) {
+      return res.status(404).send({ error: "Property not found" });
+    }
+    res.send(property);
+  } catch (err) {
+    res.status(500).send(err);
   }
 };
 
 exports.likeProperty = async (req, res) => {
-  const { id } = req.params;
   try {
-    const property = await Property.findById(id);
+    const property = await Property.findById(req.params.id);
     if (!property) {
-      return res.status(404).json({ error: "Property not found" });
+      return res.status(404).send({ error: "Property not found" });
     }
     property.likes += 1;
     await property.save();
-    res.json(property);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.send(property);
+  } catch (err) {
+    res.status(500).send(err);
   }
 };
 
-exports.showInterest = async (req, res) => {
-  const { propertyId, buyerEmail } = req.body;
+exports.expressInterest = async (req, res) => {
   try {
-    const property = await Property.findById(propertyId).populate("seller");
+    const property = await Property.findById(req.params.id).populate("owner");
     if (!property) {
-      return res.status(404).json({ error: "Property not found" });
+      return res.status(404).send({ error: "Property not found" });
     }
-    const sellerEmail = property.seller.email;
-    sendInterestEmail(sellerEmail, buyerEmail);
-    res.status(200).json({ message: "Interest email sent to seller" });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+
+    // Send email to the buyer
+    const buyerEmail = req.body.email;
+    const sellerEmail = property.owner.email;
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "your-email@gmail.com",
+        pass: "your-email-password",
+      },
+    });
+
+    const mailOptionsBuyer = {
+      from: "your-email@gmail.com",
+      to: buyerEmail,
+      subject: "Property Interest Confirmation",
+      text: `You have expressed interest in the property "${property.title}". Contact details of the seller: ${sellerEmail}`,
+    };
+
+    const mailOptionsSeller = {
+      from: "your-email@gmail.com",
+      to: sellerEmail,
+      subject: "New Interest in Your Property",
+      text: `A buyer has expressed interest in your property "${property.title}". Contact details of the buyer: ${buyerEmail}`,
+    };
+
+    await transporter.sendMail(mailOptionsBuyer);
+    await transporter.sendMail(mailOptionsSeller);
+
+    res.send({ message: "Interest expressed and emails sent" });
+  } catch (err) {
+    res.status(500).send(err);
   }
 };

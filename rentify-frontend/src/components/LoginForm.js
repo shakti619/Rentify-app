@@ -1,37 +1,50 @@
-// LoginForm.js
 import React, { useState } from "react";
-import { login } from "../services/api";
-import { BsEnvelope, BsLock } from "react-icons/bs"; // Importing icons from React Icons
-import { Form, Button } from "react-bootstrap"; // Importing Form and Button components from react-bootstrap
+import { loginUser } from "../services/api";
+import { BsEnvelope, BsLock } from "react-icons/bs";
+import { Form, Button, Alert } from "react-bootstrap"; // Import Alert for error messages
 import "./styles.css"; // Importing custom CSS for LoginForm
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await login({ email, password });
-      console.log(response.data);
-      // Handle login success
-    } catch (error) {
-      console.error(error);
-      // Handle login error
+      const user = await loginUser(formData);
+      console.log(user.data);
+      localStorage.setItem("token", user.token);
+      window.location.href = "/properties";
+    } catch (err) {
+      console.error(err);
+      setError("Failed to login");
     }
   };
 
   return (
     <Form onSubmit={handleSubmit} className="login-form">
+      {error && <Alert variant="danger">{error}</Alert>}
       <Form.Group controlId="formBasicEmail">
         <Form.Label>
           <BsEnvelope /> Email
         </Form.Label>
         <Form.Control
           type="email"
+          name="email"
           placeholder="Enter email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formData.email}
+          onChange={handleChange}
           required
         />
       </Form.Group>
@@ -42,9 +55,10 @@ const LoginForm = () => {
         </Form.Label>
         <Form.Control
           type="password"
+          name="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formData.password}
+          onChange={handleChange}
           required
         />
       </Form.Group>
