@@ -30,7 +30,7 @@ function RegisterForm() {
       await registerUser(formData);
       window.location.href = "/login";
     } catch (err) {
-      setError("Failed to register");
+      setError(err.response?.data?.message || "Failed to register");
     }
   };
 
@@ -83,7 +83,7 @@ function RegisterForm() {
           <BsPhone /> Phone Number
         </Form.Label>
         <Form.Control
-          type="text"
+          type="tel"
           name="phoneNumber"
           placeholder="Enter phone number"
           value={formData.phoneNumber}

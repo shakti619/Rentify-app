@@ -25,7 +25,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       // Handle unauthorized errors
       console.error("Unauthorized access - possibly invalid token");
     }
@@ -85,7 +85,7 @@ export const likeProperty = async (id) => {
 
 export const expressInterest = async (id, email) => {
   try {
-    const response = await api.post(`/properties/${id}/interest`, email);
+    const response = await api.post(`/properties/${id}/interest`, { email });
     return response.data;
   } catch (error) {
     console.error("Failed to express interest", error);

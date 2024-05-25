@@ -23,12 +23,12 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const user = await loginUser(formData);
-      console.log(user.data);
       localStorage.setItem("token", user.token);
+      localStorage.setItem("userInfo", JSON.stringify(user)); // Store user info
       window.location.href = "/properties";
     } catch (err) {
       console.error(err);
-      setError("Failed to login");
+      setError(err.response?.data?.message || "Failed to login");
     }
   };
 

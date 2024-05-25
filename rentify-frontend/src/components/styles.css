@@ -59,3 +59,9 @@
 .marketing-line p {
   font-size: 40px;
 }
+
+/* styles.css */
+.error-message {
+  color: red;
+  margin-top: 10px;
+}

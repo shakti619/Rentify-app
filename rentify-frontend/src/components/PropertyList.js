@@ -5,17 +5,23 @@ import { Row, Col } from "react-bootstrap";
 
 const PropertyList = () => {
   const [properties, setProperties] = useState([]);
-  const [buyerEmail, setBuyerEmail] = useState("buyer-email@example.com"); // This should be dynamically set based on the logged-in user
+  const [buyerEmail, setBuyerEmail] = useState("");
 
   useEffect(() => {
     const getProperties = async () => {
       try {
         const response = await fetchProperties();
-        setProperties(response.properties); // Adjust according to your API response structure
+        setProperties(response); // Adjust according to your API response structure if necessary
       } catch (error) {
         console.error("Failed to fetch properties:", error);
       }
     };
+
+    // Set buyer email based on logged-in user
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (userInfo && userInfo.email) {
+      setBuyerEmail(userInfo.email);
+    }
 
     getProperties();
   }, []);
