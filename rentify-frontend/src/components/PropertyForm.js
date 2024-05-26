@@ -30,7 +30,7 @@ const PropertyForm = ({ property = {}, onSave }) => {
       const method = property._id ? "patch" : "post";
       const url = property._id
         ? `/api/properties/${property._id}`
-        : "/api/properties";
+        : "http://localhost:8080/api/properties";
       const res = await axios[method](url, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

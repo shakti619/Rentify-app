@@ -13,8 +13,8 @@ const Header = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
-            <Nav.Link as={Link} to="/properties" className="nav-item">
-              <FaBuilding /> Properties
+            <Nav.Link as={Link} to="/myProperties" className="nav-item">
+              <FaBuilding /> My Properties
             </Nav.Link>
             <Nav.Link as={Link} to="/register" className="nav-item">
               <FaUserPlus /> Register

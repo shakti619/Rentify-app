@@ -1,6 +1,10 @@
 const Property = require("../models/Property");
 const nodemailer = require("nodemailer");
 const { validationResult } = require("express-validator");
+const sgMail = require('@sendgrid/mail');
+
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.getProperties = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -123,49 +127,45 @@ exports.likeProperty = async (req, res) => {
 
 exports.expressInterest = async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id).populate("owner");
+    const property = await Property.findById(req.params.id).populate('owner');
     if (!property) {
-      return res.status(404).send({ error: "Property not found" });
+      return res.status(404).send({ error: 'Property not found' });
     }
 
     if (!req.user) {
-      return res.status(401).send({ error: "Unauthorized access" });
+      return res.status(401).send({ error: 'Unauthorized access' });
     }
 
-    const buyerEmail = req.user.email;
-    const sellerEmail = property.owner.email;
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    const buyerEmail = "solanki.shakti619@gmail.com";
+    const sellerEmail = 'nsnarender5511@gmail.com';
 
     const mailOptionsBuyer = {
-      from: process.env.EMAIL_USER,
+      from: "nshnarender1998@gmail.com",
       to: buyerEmail,
-      subject: "Property Interest Confirmation",
+      subject: 'Property Interest Confirmation',
       text: `You have expressed interest in the property "${property.title}". Contact details of the seller: ${sellerEmail}`,
     };
 
     const mailOptionsSeller = {
-      from: process.env.EMAIL_USER,
+      from: "nshnarender1998@gmail.com",
       to: sellerEmail,
-      subject: "New Interest in Your Property",
+      subject: 'New Interest in Your Property',
       text: `A buyer has expressed interest in your property "${property.title}". Contact details of the buyer: ${buyerEmail}`,
     };
 
-    await transporter.sendMail(mailOptionsBuyer);
-    await transporter.sendMail(mailOptionsSeller);
+    await sgMail.send(mailOptionsBuyer);
+    await sgMail.send(mailOptionsSeller);
 
-    res.send({ message: "Interest expressed and emails sent" });
+    res.send({ message: 'Interest expressed and emails sent' });
   } catch (err) {
     console.error(err);
-    res.status(500).send({ error: "Server Error" });
+    res.status(500).send({ error: 'Server Error' });
   }
 };
+
+
+
+
 
 // Get properties for the seller
 exports.getSellerProperties = async (req, res) => {
