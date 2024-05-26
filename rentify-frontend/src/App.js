@@ -8,6 +8,7 @@ const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Properties = lazy(() => import("./pages/Properties"));
+const MyProperties = lazy(() => import("./pages/MyProperties"));
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/properties" element={<Properties />} />
+              <Route path="/myProperties" element={<MyProperties />} />
           </Routes>
         </ErrorBoundary>
       </Suspense>
