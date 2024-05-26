@@ -26,7 +26,7 @@ const PropertyCard = ({ property, buyerEmail, isSeller, onEdit, onDelete }) => {
 
   return (
     <Card className="my-3 p-3 rounded">
-      <Card.Img src={property.img} variant="top" />
+      <Card.Img src={property.image} variant="top" />
       <Card.Body>
         <Card.Title>{property.title}</Card.Title>
         <Card.Text>{property.description}</Card.Text>

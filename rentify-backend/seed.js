@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
-const connectDB = require("./db");
 const dotenv = require("dotenv");
+const connectDB = require("./db");
 const User = require("./models/User");
 const Property = require("./models/Property");
+
 dotenv.config();
 
 const seedData = async () => {
@@ -32,7 +33,7 @@ const seedData = async () => {
     // Insert sample user data
     const createdUsers = await User.insertMany(users);
 
-    // Sample property data
+    // Sample property data with correct image paths
     const properties = [
       {
         title: "Luxury Apartment",
@@ -43,6 +44,7 @@ const seedData = async () => {
         bedrooms: 3,
         bathrooms: 2,
         owner: createdUsers[0]._id,
+        image: "/public/spacious.webp",
         likes: 10,
       },
       {
@@ -54,6 +56,7 @@ const seedData = async () => {
         bedrooms: 2,
         bathrooms: 1,
         owner: createdUsers[1]._id,
+        image: "/public/A cozy cottage.webp",
         likes: 5,
       },
       {
@@ -65,6 +68,7 @@ const seedData = async () => {
         bedrooms: 4,
         bathrooms: 3,
         owner: createdUsers[0]._id,
+        image: "/public/modern villa.webp",
         likes: 20,
       },
       {
@@ -76,6 +80,7 @@ const seedData = async () => {
         bedrooms: 1,
         bathrooms: 1,
         owner: createdUsers[1]._id,
+        image: "/public/compact studio.webp",
         likes: 8,
       },
       {
@@ -87,6 +92,7 @@ const seedData = async () => {
         bedrooms: 3,
         bathrooms: 2,
         owner: createdUsers[0]._id,
+        image: "/public/home.webp",
         likes: 12,
       },
       {
@@ -98,6 +104,7 @@ const seedData = async () => {
         bedrooms: 5,
         bathrooms: 4,
         owner: createdUsers[1]._id,
+        image: "/public/penthouse.webp",
         likes: 25,
       },
       {
@@ -109,6 +116,7 @@ const seedData = async () => {
         bedrooms: 6,
         bathrooms: 5,
         owner: createdUsers[0]._id,
+        image: "/public/estate.webp",
         likes: 30,
       },
       {
@@ -120,6 +128,7 @@ const seedData = async () => {
         bedrooms: 2,
         bathrooms: 1,
         owner: createdUsers[1]._id,
+        image: "/public/condo.webp",
         likes: 15,
       },
       {
@@ -131,6 +140,7 @@ const seedData = async () => {
         bedrooms: 3,
         bathrooms: 2,
         owner: createdUsers[0]._id,
+        image: "/public/bunglow.webp",
         likes: 18,
       },
       {
@@ -142,6 +152,7 @@ const seedData = async () => {
         bedrooms: 3,
         bathrooms: 2,
         owner: createdUsers[1]._id,
+        image: "/public/townhouse.webp",
         likes: 22,
       },
       {
@@ -153,6 +164,7 @@ const seedData = async () => {
         bedrooms: 2,
         bathrooms: 2,
         owner: createdUsers[0]._id,
+        image: "/public/home.webp",
         likes: 28,
       },
       {
@@ -164,6 +176,7 @@ const seedData = async () => {
         bedrooms: 2,
         bathrooms: 1,
         owner: createdUsers[1]._id,
+        image: "/public/cabin.webp",
         likes: 14,
       },
       {
@@ -175,6 +188,7 @@ const seedData = async () => {
         bedrooms: 2,
         bathrooms: 2,
         owner: createdUsers[0]._id,
+        image: "/public/loft.webp",
         likes: 16,
       },
     ];

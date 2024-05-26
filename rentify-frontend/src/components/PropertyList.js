@@ -6,12 +6,13 @@ import {
 } from "../services/api";
 import PropertyCard from "./PropertyCard";
 import PropertyForm from "./PropertyForm";
-import { Row, Col, Button, Alert } from "react-bootstrap";
+import { Row, Col, Button, Alert, Modal } from "react-bootstrap";
 
 const PropertyList = ({ isSeller }) => {
   const [properties, setProperties] = useState([]);
   const [buyerEmail, setBuyerEmail] = useState("");
   const [editingProperty, setEditingProperty] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -20,9 +21,12 @@ const PropertyList = ({ isSeller }) => {
         const response = isSeller
           ? await fetchSellerProperties()
           : await fetchProperties();
-        if (response && response.properties) {
-          console.log("API Response:", response); // Log the entire response
-          setProperties(Array.from(response.properties)); // Adjust according to your API response structure if necessary
+        if (Array.isArray(response)) {
+          console.log("API Response is an array:", response);
+          setProperties(response);
+        } else if (response && response.properties) {
+          console.log("API Response:", response);
+          setProperties(response.properties);
         } else {
           console.error("Unexpected response format:", response);
           setError("Unexpected response format");
@@ -68,28 +72,46 @@ const PropertyList = ({ isSeller }) => {
       setProperties([...properties, savedProperty]);
     }
     setEditingProperty(null);
+    setShowModal(false);
+  };
+
+  const handleCloseModal = () => {
+    setEditingProperty(null);
+    setShowModal(false);
+  };
+
+  const handleShowModal = (property = {}) => {
+    setEditingProperty(property);
+    setShowModal(true);
   };
 
   return (
     <div>
       {error && <Alert variant="danger">{error}</Alert>}
       {isSeller && (
-        <Button onClick={() => setEditingProperty({})} className="mb-3">
+        <Button onClick={() => handleShowModal({})} className="mb-3">
           Add Property
         </Button>
       )}
-      {editingProperty && (
-        <PropertyForm property={editingProperty} onSave={handleSave} />
-      )}
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {editingProperty?._id ? "Edit Property" : "Add Property"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <PropertyForm property={editingProperty} onSave={handleSave} />
+        </Modal.Body>
+      </Modal>
       <Row>
-        {properties && properties.length > 0 ? (
+        {properties.length > 0 ? (
           properties.map((property) => (
             <Col key={property._id} sm={12} md={6} lg={4} xl={3}>
               <PropertyCard
                 property={property}
                 buyerEmail={buyerEmail}
                 isSeller={isSeller}
-                onEdit={() => setEditingProperty(property)}
+                onEdit={() => handleShowModal(property)}
                 onDelete={() => handleDelete(property._id)}
               />
             </Col>

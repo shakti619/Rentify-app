@@ -61,6 +61,11 @@ const propertySchema = new mongoose.Schema(
       default: 0,
       min: [0, "Likes cannot be negative"],
     },
+    image: {
+      type: String,
+      default:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png", // Replace with the actual URL of the default image
+    },
   },
   { timestamps: true }
 );
