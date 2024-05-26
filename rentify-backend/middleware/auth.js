@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const auth = async (req, res, next) => {
+  console.log("request Recived to create property  " + req.body);
   try {
     const authHeader = req.header("Authorization");
     if (!authHeader) {
@@ -9,7 +10,7 @@ const auth = async (req, res, next) => {
     }
 
     const token = authHeader.replace("Bearer ", "");
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, "process.env.JWT_SECRET");
     const user = await User.findOne({
       _id: decoded._id,
       "tokens.token": token,
