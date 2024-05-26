@@ -11,7 +11,7 @@ import { Row, Col, Button, Alert, Modal } from "react-bootstrap";
 const PropertyList = ({ isSeller }) => {
   const [properties, setProperties] = useState([]);
   const [buyerEmail, setBuyerEmail] = useState("");
-  const [editingProperty, setEditingProperty] = useState(null);
+  const [editingProperty, setEditingProperty] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState("");
 
@@ -62,7 +62,7 @@ const PropertyList = ({ isSeller }) => {
   };
 
   const handleSave = (savedProperty) => {
-    if (editingProperty) {
+    if (editingProperty._id) {
       setProperties(
         properties.map((property) =>
           property._id === savedProperty._id ? savedProperty : property
@@ -71,12 +71,12 @@ const PropertyList = ({ isSeller }) => {
     } else {
       setProperties([...properties, savedProperty]);
     }
-    setEditingProperty(null);
+    setEditingProperty({});
     setShowModal(false);
   };
 
   const handleCloseModal = () => {
-    setEditingProperty(null);
+    setEditingProperty({});
     setShowModal(false);
   };
 
@@ -96,7 +96,7 @@ const PropertyList = ({ isSeller }) => {
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {editingProperty?._id ? "Edit Property" : "Add Property"}
+            {editingProperty._id ? "Edit Property" : "Add Property"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
