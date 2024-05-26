@@ -3,7 +3,8 @@ const nodemailer = require("nodemailer");
 const { validationResult } = require("express-validator");
 const sgMail = require('@sendgrid/mail');
 
-sgMail.setApiKey("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")
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.getProperties = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
