@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { registerUser } from "../services/api";
 import { BsFillPersonFill, BsEnvelope, BsPhone, BsLock } from "react-icons/bs";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 import "./styles.css";
 
 function RegisterForm() {
@@ -15,6 +15,7 @@ function RegisterForm() {
   });
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -26,10 +27,14 @@ function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
     try {
       await registerUser(formData);
-      console.log(formData);
-      window.location.href = "/login";
+      setSuccess("Registration successful! Redirecting to login...");
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to register");
     }
@@ -37,6 +42,8 @@ function RegisterForm() {
 
   return (
     <Form onSubmit={handleSubmit} className="register-form">
+      {error && <Alert variant="danger">{error}</Alert>}
+      {success && <Alert variant="success">{success}</Alert>}
       <Form.Group controlId="formBasicFirstName">
         <Form.Label>
           <BsFillPersonFill /> First Name
@@ -84,7 +91,7 @@ function RegisterForm() {
           <BsPhone /> Phone Number
         </Form.Label>
         <Form.Control
-          type="tel"
+          type="text"
           name="phoneNumber"
           placeholder="Enter phone number"
           value={formData.phoneNumber}
@@ -111,14 +118,13 @@ function RegisterForm() {
         <Form.Check
           type="checkbox"
           name="isSeller"
-          label="Are you a seller?"
+          label="Register as a seller"
           checked={formData.isSeller}
           onChange={handleChange}
         />
       </Form.Group>
 
-      {error && <p className="error-message">{error}</p>}
-      <Button variant="primary" type="submit" className="submit-button">
+      <Button variant="primary" type="submit">
         Register
       </Button>
     </Form>

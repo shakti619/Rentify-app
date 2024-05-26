@@ -20,7 +20,7 @@ mongoose
 
 // Routes
 app.use("/api/users", userRoutes);
-app.use("/api/properties", propertyRoutes);
+app.use("/api/properties", propertyRoutes); // Ensure this route is included
 
 // Home route
 app.get("/", (req, res) => {

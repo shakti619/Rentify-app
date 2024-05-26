@@ -22,17 +22,13 @@ const PropertyList = ({ isSeller }) => {
           ? await fetchSellerProperties()
           : await fetchProperties();
         if (Array.isArray(response)) {
-          console.log("API Response is an array:", response);
           setProperties(response);
         } else if (response && response.properties) {
-          console.log("API Response:", response);
           setProperties(response.properties);
         } else {
-          console.error("Unexpected response format:", response);
           setError("Unexpected response format");
         }
       } catch (error) {
-        console.error("Failed to fetch properties:", error);
         setError("Failed to fetch properties");
       }
     };
@@ -42,7 +38,6 @@ const PropertyList = ({ isSeller }) => {
     if (userInfo && userInfo.email) {
       setBuyerEmail(userInfo.email);
     } else {
-      console.warn("No user info found in local storage or email is missing");
       setError("No user info found in local storage or email is missing");
     }
 
@@ -56,7 +51,6 @@ const PropertyList = ({ isSeller }) => {
         properties.filter((property) => property._id !== propertyId)
       );
     } catch (error) {
-      console.error("Failed to delete property:", error);
       setError("Failed to delete property");
     }
   };
@@ -85,13 +79,25 @@ const PropertyList = ({ isSeller }) => {
     setShowModal(true);
   };
 
+  const showSellerProperties = async () => {
+    try {
+      const response = await fetchSellerProperties();
+      setProperties(response);
+    } catch (error) {
+      setError("Failed to fetch seller properties");
+    }
+  };
+
   return (
     <div>
       {error && <Alert variant="danger">{error}</Alert>}
       {isSeller && (
-        <Button onClick={() => handleShowModal({})} className="mb-3">
-          Add Property
-        </Button>
+        <div className="mb-3">
+          <Button onClick={() => handleShowModal({})}>Add Property</Button>
+          <Button onClick={showSellerProperties} className="ml-2">
+            Show My Properties
+          </Button>
+        </div>
       )}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
